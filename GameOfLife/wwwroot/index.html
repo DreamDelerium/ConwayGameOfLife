@@ -39,6 +39,16 @@
             display: none;
         }
 
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
         .section {
             background: white;
             margin-bottom: 20px;
@@ -325,6 +335,7 @@
         <h1>Conway's Game of Life</h1>
 
         <div id="error" class="error"></div>
+        <div id="info" class="info"></div>
 
         <!-- Board Management -->
         <div class="section">
@@ -423,22 +434,36 @@
         let loading = false;
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             fetchBoardIds();
         });
 
         // Error handling
         function showError(message) {
             const errorDiv = document.getElementById('error');
+            const infoDiv = document.getElementById('info');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
+            infoDiv.style.display = 'none'; // Hide info when showing error
             setTimeout(() => {
                 errorDiv.style.display = 'none';
             }, 5000);
         }
 
+        function showInfo(message) {
+            const infoDiv = document.getElementById('info');
+            const errorDiv = document.getElementById('error');
+            infoDiv.textContent = message;
+            infoDiv.style.display = 'block';
+            errorDiv.style.display = 'none'; // Hide error when showing info
+            setTimeout(() => {
+                infoDiv.style.display = 'none';
+            }, 4000);
+        }
+
         function clearError() {
             document.getElementById('error').style.display = 'none';
+            document.getElementById('info').style.display = 'none';
         }
 
         // API calls
@@ -482,13 +507,13 @@
                 boardDiv.className = 'board-item' + (boardId === currentBoardId ? ' active' : '');
 
                 boardDiv.innerHTML = `
-                    <button class="board-btn" onclick="selectBoard('${boardId}')">
-                        ${boardId.substring(0, 8)}...
-                    </button>
-                    <button class="delete-btn" onclick="deleteBoard('${boardId}')" title="Delete board">
-                        🗑️
-                    </button>
-                `;
+                        <button class="board-btn" onclick="selectBoard('${boardId}')">
+                            ${boardId.substring(0, 8)}...
+                        </button>
+                        <button class="delete-btn" onclick="deleteBoard('${boardId}')" title="Delete board">
+                            🗑️
+                        </button>
+                    `;
 
                 listDiv.appendChild(boardDiv);
             });
@@ -571,6 +596,12 @@
                 currentBoard = data.data;
                 updateBoardDisplay();
                 clearError();
+
+                // Check if all cells are dead and stop auto-play if so
+                if (isPlaying && isBoardDead(currentBoard.grid)) {
+                    stopPlay();
+                    showInfo('▶️ Game paused: All cells are dead');
+                }
             } catch (error) {
                 showError('Failed to get next generation');
             }
@@ -587,6 +618,11 @@
                 currentBoard = data.data;
                 updateBoardDisplay();
                 clearError();
+
+                // Check if board is dead and show info message
+                if (isBoardDead(currentBoard.grid)) {
+                    showInfo('ℹ️ All cells are dead - no further evolution possible');
+                }
             } catch (error) {
                 showError('Failed to advance generations');
             } finally {
@@ -617,16 +653,45 @@
         function togglePlay() {
             if (!currentBoardId) return;
 
-            isPlaying = !isPlaying;
-
             if (isPlaying) {
-                playInterval = setInterval(getNextGeneration, playSpeed);
+                stopPlay();
             } else {
-                clearInterval(playInterval);
+                startPlay();
+            }
+        }
+
+        function startPlay() {
+            // Check if board is already dead before starting
+            if (currentBoard && isBoardDead(currentBoard.grid)) {
+                showInfo('🚫 Cannot play: All cells are already dead');
+                return;
             }
 
+            isPlaying = true;
+            playInterval = setInterval(getNextGeneration, playSpeed);
             updatePlayButton();
             updateControlButtons();
+        }
+
+        function stopPlay() {
+            isPlaying = false;
+            clearInterval(playInterval);
+            updatePlayButton();
+            updateControlButtons();
+        }
+
+        function isBoardDead(grid) {
+            if (!grid || !grid.length) return true;
+
+            // Check if any cell is alive
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col]) {
+                        return false; // Found a living cell
+                    }
+                }
+            }
+            return true; // No living cells found
         }
 
         function updateSpeed() {
@@ -709,11 +774,11 @@
 
             if (!currentBoard) {
                 displayDiv.innerHTML = `
-                    <div class="no-board">
-                        <h3>No board selected</h3>
-                        <p>Create a new board or select an existing one to get started</p>
-                    </div>
-                `;
+                        <div class="no-board">
+                            <h3>No board selected</h3>
+                            <p>Create a new board or select an existing one to get started</p>
+                        </div>
+                    `;
                 controlsDiv.style.display = 'none';
                 return;
             }
@@ -721,25 +786,28 @@
             controlsDiv.style.display = 'block';
 
             displayDiv.innerHTML = `
-                <div class="board-info">
-                    <h3>Board: ${currentBoard.boardId ? currentBoard.boardId.substring(0, 8) + '...' : 'Unknown'}</h3>
-                    <div class="stats">
-                        <span>Generation: ${currentBoard.generation || 0}</span>
-                        ${currentBoard.timestamp ? `<span>Updated: ${new Date(currentBoard.timestamp).toLocaleTimeString()}</span>` : ''}
+                    <div class="board-info">
+                        <h3>Board: ${currentBoard.boardId ? currentBoard.boardId.substring(0, 8) + '...' : 'Unknown'}</h3>
+                        <div class="stats">
+                            <span>Generation: ${currentBoard.generation || 0}</span>
+                            ${currentBoard.timestamp ? `<span>Updated: ${new Date(currentBoard.timestamp).toLocaleTimeString()}</span>` : ''}
+                        </div>
+                        <div class="status">
+                            ${currentBoard.isStable !== undefined ?
+                    `<span class="${currentBoard.isStable ? 'stable' : ''}">${currentBoard.isStable ? 'Stable' : 'Active'}</span>` :
+                    ''}
+                            ${currentBoard.isCyclic ?
+                    `<span class="cyclic">Cyclic (Length: ${currentBoard.cycleLength})</span>` :
+                    ''}
+                            ${isBoardDead(currentBoard.grid) ?
+                    `<span style="color: #95a5a6;">💀 All Dead</span>` :
+                    ''}
+                        </div>
+                        ${currentBoard.message ? `<p style="margin-top: 10px; color: #7f8c8d;">${currentBoard.message}</p>` : ''}
                     </div>
-                    <div class="status">
-                        ${currentBoard.isStable !== undefined ?
-                            `<span class="${currentBoard.isStable ? 'stable' : ''}">${currentBoard.isStable ? 'Stable' : 'Active'}</span>` :
-                            ''}
-                        ${currentBoard.isCyclic ?
-                            `<span class="cyclic">Cyclic (Length: ${currentBoard.cycleLength})</span>` :
-                            ''}
-                    </div>
-                    ${currentBoard.message ? `<p style="margin-top: 10px; color: #7f8c8d;">${currentBoard.message}</p>` : ''}
-                </div>
-                ${renderGameGrid(currentBoard.grid)}
-                ${loading ? '<div class="loading">Processing...</div>' : ''}
-            `;
+                    ${renderGameGrid(currentBoard.grid)}
+                    ${loading ? '<div class="loading">Processing...</div>' : ''}
+                `;
         }
 
         function renderGameGrid(grid) {

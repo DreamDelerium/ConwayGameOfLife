@@ -110,6 +110,9 @@ namespace GameOfLife.Controllers
         /// <summary>
         /// Get the next generation of a board
         /// </summary>
+        /// <remarks>
+        /// Note:  If autoSave is true, the board state will be saved after computing the next generation.  If it is false, the board state will not be saved and will not progress to the next state.
+        /// </remarks>
         /// <param name="boardId">Board ID</param>
         /// <param name="autoSave">Whether to save automatically</param>
         [HttpGet("board/{boardId}/next")]
@@ -139,6 +142,9 @@ namespace GameOfLife.Controllers
         /// <param name="boardId">Board ID</param>
         /// <param name="iterations">Number of generations to advance</param>
         /// <param name="autoSave">Whether to save automatically</param>
+        /// <remarks>
+        /// Note:  If autoSave is true, the board state will be saved after computing the next generation.  If it is false, the board state will not be saved and will not progress to the next state.
+        /// </remarks>
         [HttpGet("board/{boardId}/advance/{iterations}")]
         [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 200)]
         [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 400)]
@@ -171,6 +177,9 @@ namespace GameOfLife.Controllers
         /// <param name="boardId">Board ID</param>
         /// <param name="maxIterations">Maximum generations to simulate (1-100,000)</param>
         /// <param name="autoSave">Whether to save automatically</param>
+        /// <remarks>
+        /// Note:  If autoSave is true, the board state will be saved after computing the next generation.  If it is false, the board state will not be saved and will not progress to the next state.
+        /// </remarks>
         [HttpGet("board/{boardId}/final")]
         [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 200)]
         [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 400)]
