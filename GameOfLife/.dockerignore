@@ -1,0 +1,27 @@
+﻿# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Build outputs
+bin/
+obj/
+publish/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Git
+.git/
+.gitignore
+
+# Logs
+logs/
+*.log
+
+# Other
+README.md
+.env

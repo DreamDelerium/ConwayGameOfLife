@@ -1,0 +1,8 @@
+﻿namespace GameOfLife.Models.DTO
+{
+    public class BoardIdResponseDto
+    {
+        public string BoardId { get; set; }
+        public bool[][] Board { get; set; }
+    }
+}

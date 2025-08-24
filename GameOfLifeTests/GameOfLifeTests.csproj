@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\GameOfLife\GameOfLife.API.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<!-- Test SDK -->
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+
+		<!-- xUnit -->
+		<PackageReference Include="xunit" Version="2.5.1" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.1" />
+
+		<!-- Moq for mocking -->
+		<PackageReference Include="Moq" Version="4.20.72" />
+
+		<!-- MSTest (optional, keep if you use it) -->
+		<PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.6.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+
+</Project>
