@@ -10,7 +10,7 @@ namespace GameOfLife.RedisRepositories
         private readonly IConnectionMultiplexer _redis;
         private readonly IDatabase _database;
         private readonly ILogger<RedisBoardRepository> _logger;
-        //TODO: move to appsettings
+
         private readonly TimeSpan _expiry = TimeSpan.FromHours(1);
 
         public RedisBoardRepository(IConnectionMultiplexer redis, ILogger<RedisBoardRepository> logger, IOptions<RedisSettings> redisOptions)
