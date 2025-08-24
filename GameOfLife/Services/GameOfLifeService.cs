@@ -14,7 +14,6 @@ namespace GameOfLife.Services
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
         public async Task<Board> CreateInitialBoard(int rows = 10, int cols = 10)
         {
             if (rows < 1 || cols < 1 || rows > 1000 || cols > 1000)
@@ -37,7 +36,6 @@ namespace GameOfLife.Services
 
             return board;
         }
-
         public async Task<bool> DeleteBoard(string boardId)
         {
             if (string.IsNullOrWhiteSpace(boardId))
@@ -56,8 +54,6 @@ namespace GameOfLife.Services
             }
             return response ?? new List<string>();
         }
-
-
         public Board GetNextGeneration(Board board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
@@ -86,7 +82,6 @@ namespace GameOfLife.Services
 
             return newBoard;
         }
-
         public Board GetNthGeneration(Board board, int n)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
@@ -100,7 +95,6 @@ namespace GameOfLife.Services
 
             return currentBoard;
         }
-
         public BoardState GetFinalState(Board board, int maxIterations = 10000)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
@@ -171,7 +165,6 @@ namespace GameOfLife.Services
                 Message = $"Board did not stabilize within {maxIterations} iterations"
             };
         }
-
         public async Task<string> SaveBoard(Board board)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
@@ -180,7 +173,6 @@ namespace GameOfLife.Services
             await _repository.SaveBoardAsync(board);
             return board.Id;
         }
-
         public async Task<Board> LoadBoard(string boardId)
         {
             if (string.IsNullOrWhiteSpace(boardId))
@@ -195,7 +187,6 @@ namespace GameOfLife.Services
 
             return board;
         }
-
         private int CountAliveNeighbors(Board board, int x, int y)
         {
             int count = 0;
@@ -218,7 +209,6 @@ namespace GameOfLife.Services
             }
             return count;
         }
-
         private bool IsEmpty(Board board)
         {
             for (int y = 0; y < board.Height; y++)
