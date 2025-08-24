@@ -1,11 +1,23 @@
-﻿namespace GameOfLife.Validators
+﻿using GameOfLife.Models;
+using Microsoft.Extensions.Options;
+
+namespace GameOfLife.Validators
 {
     public class BoardValidator : IBoardValidator
     {
-        public const int MaxBoardSize = 1000;
-        public const int MinBoardSize = 3;
-        private const int MaxIterations = 1000;
+        public  int MaxBoardSize = 100;
+        public  int MinBoardSize = 3;
+        private int MaxIterations = 100;
+        private readonly GameSettings _settings;
 
+        public BoardValidator(IOptions<GameSettings> settings)
+        {
+            _settings = settings.Value;
+            MaxBoardSize = _settings.BoardMax;
+            MaxBoardSize = _settings.BoardMin;
+            MaxIterations = _settings.IterationMax;
+
+        }
         public (bool isValid, string errorMessage) ValidateBoard(bool[][] grid)
         {
             if (grid == null)

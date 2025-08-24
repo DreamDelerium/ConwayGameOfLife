@@ -1,4 +1,5 @@
 using GameOfLife.Middleware;
+using GameOfLife.Models;
 using GameOfLife.RedisRepositories;
 using GameOfLife.Services;
 using GameOfLife.Validators;
@@ -29,10 +30,29 @@ builder.Host.UseSerilog((ctx, lc) => lc
 Log.Logger.Information("Logger configured successfully");
 
 // Register Redis
-services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(redisConnectionString)
-);
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<IConnectionMultiplexer>>();
+    var redisConnectionString = builder.Configuration.GetSection("Redis:ConnectionString").Value;
 
+    try
+    {
+        var connection = ConnectionMultiplexer.Connect(redisConnectionString);
+        logger.LogInformation("Successfully connected to Redis at {ConnectionString}", redisConnectionString);
+        return connection;
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to connect to Redis at {ConnectionString}", redisConnectionString);
+        throw; 
+    }
+});
+
+builder.Services.Configure<RedisSettings>(
+    builder.Configuration.GetSection("Redis"));
+
+builder.Services.Configure<GameSettings>(
+    builder.Configuration.GetSection("GameSettings"));
 
 // Add controllers, CORS, Swagger, HTTP context accessor
 services.AddControllers();

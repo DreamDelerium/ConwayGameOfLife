@@ -1,4 +1,5 @@
 ﻿using GameOfLife.Models;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -10,13 +11,15 @@ namespace GameOfLife.RedisRepositories
         private readonly IDatabase _database;
         private readonly ILogger<RedisBoardRepository> _logger;
         //TODO: move to appsettings
-        private readonly TimeSpan _expiry = TimeSpan.FromHours(24);
+        private readonly TimeSpan _expiry = TimeSpan.FromHours(1);
 
-        public RedisBoardRepository(IConnectionMultiplexer redis, ILogger<RedisBoardRepository> logger)
+        public RedisBoardRepository(IConnectionMultiplexer redis, ILogger<RedisBoardRepository> logger, IOptions<RedisSettings> redisOptions)
         {
             _redis = redis;
             _database = _redis.GetDatabase();
             _logger = logger;
+            var settings = redisOptions.Value;
+            _expiry = TimeSpan.FromHours(settings.ExpiryHours);
         }
         public List<string> GetAllBoardIds()
         {

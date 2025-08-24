@@ -3,6 +3,10 @@ using System.Text.Json;
 
 namespace GameOfLife.Middleware
 {
+    //<summary>
+    /// Middleware to handle exceptions globally and return standardized error responses.
+    /// Services and controllers should just catch specific exceptions if they want to handle them differently.
+    /// </summary>
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;

@@ -2,7 +2,7 @@
 {
     public class BoardIdResponseDto
     {
-        public string BoardId { get; set; }
-        public bool[][] Board { get; set; }
+        public string BoardId { get; set; } = string.Empty;
+        public bool[][]? Board { get; set; }
     }
 }

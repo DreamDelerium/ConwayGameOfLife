@@ -2,6 +2,6 @@
 {
     public class BoardStateDto
     {
-        public bool[][] Grid { get; set; }
+        public bool[][]? Grid { get; set; }
     }
 }
