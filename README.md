@@ -4,9 +4,11 @@ This project implements Conway's Game of Life using .NET 8. It provides a flexib
 
 ## Site Endpoints
 
-Redis: http://localhost:8001/
-Swagger: http://localhost:8080/swagger/index.html
-Test UI: http://localhost:8080/index.html
+Redis (used for data persistence): http://localhost:8001/
+
+Swagger (API explorer): http://localhost:8080/swagger/index.html
+
+Test UI (to visually test API): http://localhost:8080/index.html
 
 ## Features
 
@@ -16,7 +18,7 @@ Test UI: http://localhost:8080/index.html
 - **Step-by-Step Simulation**: Advance the simulation one generation at a time.
 - **Unit Tests**: Comprehensive test coverage for core logic.
 - **.NET 8**: Modern, fast, and cross-platform.
-- **Docker Support**: Run the application in a containerized environment.
+- **Docker Support**: Run the application in a containerized environment.  Deploys all required infrastructure (.Net API, Swagger and Redis)
 - **Test UI**: Simple web interface to visualize and interact with the simulation.  Normall I would not include this in the API project, but I used it for testing and decided to keep it in
 - **Logging**: Integrated logging for monitoring and debugging.  You can find the logs in the `logs` directory.
 - **Swagger**: Auto-generated API documentation and testing interface.
@@ -26,10 +28,10 @@ Based on the functional requirements I was given, I designed the application wit
 I tried to avoid any 'gold plating' and kept the design as simple as possible while still meeting the requirements. I broke from this rule for the test UI, which is not strictly necessary but useful for visualizing the simulation.
 I used dependency injection to manage dependencies and facilitate unit testing. I also implemented custom middleware for error handling and logging to ensure a robust application.
 
-Most of the code in this project was written by me.  I keep a library of common project templates and snippets that I use to speed up development.  
+All code in this project was written by me but external tools were used, as noted below.  I keep a library of common project templates and snippets that I use to speed up development.  As I had a template for .Net API, I was able to leverage
+what I already build (which provided about 60% of the work)
 
-Because this is an AI company, and because I was told in ther interview that developers are encouraged to use AI tools, I did use ChatGPT to help me with some of the boilerplate code and to update the Dockerfile and docker-compose.yml to fit this project and to generate my unit tests.  
-As the UI was not a part of the functional requirements,I also used AI to generate a simple HTML/JS interface to visualize the simulation. Lastly, I used AI to review my code for spelling errors and general formatting/linting.
+Because this is an AI company, and because I was told in the interview that developers are encouraged to use AI tools, I did use ChatGPT to help me with some of the boilerplate code and to update the Dockerfile and docker-compose.yml to fit this project and to generate my unit tests.  As the UI was not a part of the functional requirements,I also used AI to generate a simple HTML/JS interface to visualize the simulation. Lastly, I used AI to review my code for spelling errors and general formatting/linting.
 
 Decisions on how to implement certain features were based on my experience and best practices in software development. I prioritized simplicity, maintainability, and performance throughout the design and implementation process.
 
@@ -42,6 +44,22 @@ I decided to use Redis for state storage because it is a fast, in-memory data st
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Docker](https://www.docker.com/get-started) (optional, for containerization)
+
+  The easiest way to run this application is to use Docker. Docker will setup all necessary infrastructure and ensure a common baseline for deployment.  If you do not have Docker, please let me know.  I can walk you through the setup of Redis if needed.
+
+### Docker Setup
+1.  Clone the repository:
+    ```sh
+    git clone <repository-url>
+    cd GameOfLife\GameOfLife
+    ```
+2. Build the Docker image:
+    ```sh
+    docker compose up --build
+    ```
+
+This will build and deploy the docker containers.  You can find them under gameoflife in your Desktop Docker. You can access all web sites (Swagger, Redis and the Test UI) using the URL's in the ## Site Endpoints section.
+If you don't have Docker and would like to deploy manually you can follow the steps bellow.  Please note, you will need to install Redis and the URL endpoints will depend on your local setup.
 
 ### Build and Run Locally
 
@@ -62,21 +80,14 @@ I decided to use Redis for state storage because it is a fast, in-memory data st
     ```
 
 ### Run Tests
-## Docker Setup
 
-1. Build the Docker image:
     ```sh
-    docker build -t gameoflife .
-    ```
-
-2. Run the container:
-    ```sh
-    docker run --rm -it gameoflife
-    ```
+    cd GameOfLife
+    run: dotnet test GameOfLifeTests --logger "console;verbosity=detailed"    
 
 ## Configuration
 
-- Grid size and initial state can be configured via environment variables or configuration files (see source code for details).
+- Grid size and initial state can be configured via appsettings.json / appsettings.development.json
 
 ## Project Structure
 ```plaintext
@@ -121,13 +132,12 @@ GameOfLifeTests/
 └── GameOfLifeServiceUnitTests/
 ```
 
-
 ## Design Patterns Used
 - **Dependency Injection**: Services and repositories are injected into controllers for better testability and separation of concerns.
-- **Repository Pattern**: Abstracts data access logic, making it easier to switch data sources if needed.
-- **Middleware**: Custom middleware for error handling and logging.
-- **DTOs (Data Transfer Objects)**: Used to transfer data between layers, ensuring a clear contract for API responses and requests.
-- **Contoller-Service Pattern**: Controllers handle HTTP requests and delegate business logic to services.
+- **Repository Pattern**: Abstracts data access logic, making it easier to switch data sources if needed.  This is the RedisRepository class.  Typically, when using Entity Framework, the EF Models server as the repository's but since I am working with Redis, I added them explicitly.
+- **Middleware**: Custom middleware for error handling and logging.  This allows the controllers to stay thin and allow the middleware to handle all unexpected errors.  Services and controllers will still handle logical error checking.
+- **DTOs (Data Transfer Objects)**: Used to transfer data between layers, ensuring a clear contract for API responses and requests.  Probably not as necessary in this application but a good option when working with Entity Framework or larger applications.
+- **Contoller-Service Pattern**: Controllers handle HTTP requests and delegate business logic to services.  Controllers stay lean
 
 ## Program.cs Overview
 - Configures services and middleware for the application.
@@ -192,9 +202,6 @@ This setup allows running the API and its Redis dependency together with minimal
 Application logs are stored in the `logs` directory. This is configured in Program.cs and the Dockerfile to ensure logs are persisted and accessible.
 You can access the logs by navigating to the `logs` directory in the project root.
 
-## License
-
-This project is licensed under the MIT License.
 
 ## Credits
 
