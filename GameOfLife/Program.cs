@@ -82,7 +82,7 @@ services.AddSwaggerGen(c =>
         Contact = new OpenApiContact
         {
             Name = "Game of Life API",
-            Email = "contact@gameoflife.api"
+            Email = "jasonwucinski@yahoo.com"
         }
     });
 

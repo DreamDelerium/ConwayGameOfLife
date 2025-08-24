@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-using GameOfLife.Models;
+﻿using GameOfLife.Models;
 using GameOfLife.Models.DTO;
 using GameOfLife.Services;
 using GameOfLife.Validators;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace GameOfLife.Controllers
 {
@@ -14,12 +14,13 @@ namespace GameOfLife.Controllers
         private readonly IGameOfLifeService _service;
         private readonly ILogger<GameOfLifeController> _logger;
         private readonly IBoardValidator _validator;
-
-        public GameOfLifeController(IGameOfLifeService service, ILogger<GameOfLifeController> logger, IBoardValidator boardValidator)
+        private readonly IOptions<GameSettings> _settings;
+        public GameOfLifeController(IGameOfLifeService service, ILogger<GameOfLifeController> logger, IBoardValidator boardValidator, IOptions<GameSettings> settings)
         {
             _service = service;
             _logger = logger;
             _validator = boardValidator;
+            _settings = settings;
         }
 
         /// <summary>
@@ -177,8 +178,8 @@ namespace GameOfLife.Controllers
         [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 404)]
         public async Task<ActionResult<ApiResponse<BoardStateResponseDto>>> GetFinalState(string boardId, int maxIterations = 10000, bool autoSave = false)
         {
-            if (maxIterations < 1 || maxIterations > 100_000)
-                return BadRequest(ApiResponse<BoardStateResponseDto>.Fail("Max iterations must be between 1 and 100000"));
+            if (maxIterations < 1 || maxIterations > _settings.Value.IterationMax)
+                return BadRequest(ApiResponse<BoardStateResponseDto>.Fail($"Max iterations must be between 1 and {_settings.Value.IterationMax}"));
 
             var board = await _service.LoadBoard(boardId);
             var finalState = _service.GetFinalState(board, maxIterations);

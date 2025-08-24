@@ -5,6 +5,7 @@ using GameOfLife.Services;
 using GameOfLife.Validators;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -16,18 +17,20 @@ namespace GameOfLife.Tests.Controllers
         private readonly Mock<ILogger<GameOfLifeController>> _mockLogger;
         private readonly Mock<IBoardValidator> _mockValidator;
         private readonly GameOfLifeController _controller;
-
+        private readonly Mock<IOptions<GameSettings>> _mockSettings;
         public GameOfLifeControllerTests()
         {
             _mockService = new Mock<IGameOfLifeService>();
             _mockLogger = new Mock<ILogger<GameOfLifeController>>();
             _mockValidator = new Mock<IBoardValidator>();
+            _mockSettings = new Mock<IOptions<GameSettings>>();
 
             // Inject the mocked validator into the controller
             _controller = new GameOfLifeController(
                 _mockService.Object,
                 _mockLogger.Object,
-                _mockValidator.Object
+                _mockValidator.Object,
+                _mockSettings.Object
             );
         }
 
