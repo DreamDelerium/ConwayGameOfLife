@@ -1,4 +1,5 @@
-﻿namespace GameOfLife.Models { 
+﻿namespace GameOfLife.Models
+{
     public class RedisSettings
     {
         public string ConnectionString { get; set; } = string.Empty;

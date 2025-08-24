@@ -44,7 +44,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     catch (Exception ex)
     {
         logger.LogError(ex, "Failed to connect to Redis at {ConnectionString}", redisConnectionString);
-        throw; 
+        throw;
     }
 });
 

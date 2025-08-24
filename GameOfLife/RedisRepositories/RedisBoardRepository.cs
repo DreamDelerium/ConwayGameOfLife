@@ -50,7 +50,7 @@ namespace GameOfLife.RedisRepositories
 
                 if (!value.HasValue)
                 {
-                    _logger.LogWarning($"Board {boardId} not found in Redis");                    
+                    _logger.LogWarning($"Board {boardId} not found in Redis");
                     return null;
                 }
 

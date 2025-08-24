@@ -48,7 +48,7 @@ namespace GameOfLife.Services
             _logger.LogInformation("Getting all board ID's");
             var response = _repository.GetAllBoardIds();
 
-            if(response == null || response.Count < 1)
+            if (response == null || response.Count < 1)
             {
                 _logger.LogInformation("No Boards exist");
             }

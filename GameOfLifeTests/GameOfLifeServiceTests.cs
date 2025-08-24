@@ -1,9 +1,9 @@
-﻿using Xunit;
-using Moq;
+﻿using GameOfLife.Models;
 using GameOfLife.RedisRepositories;
 using GameOfLife.Services;
 using Microsoft.Extensions.Logging;
-using GameOfLife.Models;
+using Moq;
+using Xunit;
 
 namespace GameOfLife.Tests.Services
 {

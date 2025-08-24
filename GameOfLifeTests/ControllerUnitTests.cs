@@ -127,7 +127,7 @@ namespace GameOfLife.Tests.Controllers
 
         [Fact]
         public async Task GetNStatesAhead_InvalidIterations_ReturnsBadRequest()
-        {           
+        {
             _mockValidator.Setup(v => v.ValidateBoard(It.IsAny<bool[][]>()))
                           .Returns((true, string.Empty));
             _mockValidator.Setup(v => v.ValidateIterations(It.IsAny<int>()))
@@ -171,7 +171,7 @@ namespace GameOfLife.Tests.Controllers
             var badRequest = Xunit.Assert.IsType<BadRequestObjectResult>(result.Result);
             var response = Xunit.Assert.IsType<ApiResponse<BoardIdResponseDto>>(badRequest.Value);
             Xunit.Assert.Equal("Invalid board", response.Message);
-        }     
+        }
 
         [Fact]
         public async Task GetBoard_BoardNotFound_ThrowsException()
@@ -198,7 +198,7 @@ namespace GameOfLife.Tests.Controllers
             _mockService.Setup(s => s.LoadBoard("missing")).ThrowsAsync(new KeyNotFoundException());
 
             await Xunit.Assert.ThrowsAsync<KeyNotFoundException>(() => _controller.GetNStatesAhead("missing", 5));
-        }  
+        }
 
         [Fact]
         public async Task DeleteBoard_NullOrEmptyBoardId_ThrowsArgumentException()

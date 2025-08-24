@@ -5,8 +5,8 @@ namespace GameOfLife.Validators
 {
     public class BoardValidator : IBoardValidator
     {
-        public  int MaxBoardSize = 100;
-        public  int MinBoardSize = 3;
+        public int MaxBoardSize = 100;
+        public int MinBoardSize = 3;
         private int MaxIterations = 100;
         private readonly GameSettings _settings;
 

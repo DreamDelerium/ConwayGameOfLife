@@ -28,11 +28,11 @@
         }
         public class BoardState
         {
-            public Board? Board { get; set; }          
-            public bool IsStable { get; set; }        
-            public bool IsCyclic { get; set; }       
-            public int CycleLength { get; set; }      
-            public string? Message { get; set; } 
+            public Board? Board { get; set; }
+            public bool IsStable { get; set; }
+            public bool IsCyclic { get; set; }
+            public int CycleLength { get; set; }
+            public string? Message { get; set; }
         }
         public Board Clone()
         {

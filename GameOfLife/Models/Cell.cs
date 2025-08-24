@@ -1,5 +1,5 @@
 ﻿namespace GameOfLife.Models
-{ 
+{
     public class Cell
     {
         public int X { get; set; }
