@@ -126,7 +126,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.MapGet("/", () => Results.Redirect("/index.html"));
+app.MapGet("/", () => Results.Redirect("/index.html")).ExcludeFromDescription();
 
 // Map controller routes
 app.MapControllers();

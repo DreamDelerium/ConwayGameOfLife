@@ -22,48 +22,6 @@ namespace GameOfLife.Controllers
             _validator = boardValidator;
             _settings = settings;
         }
-
-        /// <summary>
-        /// Get all board IDs
-        /// </summary>
-        /// <remarks>
-        /// Returns a list of all existing board IDs in the Redis repository.
-        /// Useful for quickly listing available boards.
-        /// </remarks>
-        /// <returns>List of board IDs wrapped in ApiResponse</returns>
-        /// <response code="200">Successfully retrieved list of board IDs</response>        
-        [HttpGet("boards/ids")]
-        [ProducesResponseType(typeof(ApiResponse<List<string>>), 200)]
-        public ActionResult<ApiResponse<List<string>>> GetAllBoardIds()
-        {
-            var boardIds = _service.GetAllBoardIds();
-
-            if (boardIds == null || boardIds.Count < 1)
-                _logger.LogInformation("No boards exist");
-
-            return Ok(ApiResponse<List<string>>.Ok(boardIds, "Retrieved all board IDs"));
-        }
-
-        /// <summary>
-        /// Get the current state of a board
-        /// </summary>
-        /// <param name="boardId">Board ID</param>
-        [HttpGet("board/{boardId}")]
-        [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 404)]
-        public async Task<ActionResult<ApiResponse<BoardStateResponseDto>>> GetBoard(string boardId)
-        {
-            var board = await _service.LoadBoard(boardId);
-
-            return Ok(ApiResponse<BoardStateResponseDto>.Ok(new BoardStateResponseDto
-            {
-                BoardId = board.Id,
-                Grid = board.Grid,
-                Generation = board.Generation,
-                Timestamp = DateTime.UtcNow
-            }));
-        }
-
         /// <summary>
         /// Create a new initial board
         /// </summary>
@@ -106,6 +64,47 @@ namespace GameOfLife.Controllers
             return Ok(ApiResponse<BoardIdResponseDto>.Ok(
                 new BoardIdResponseDto { BoardId = boardId, Board = board.Grid },
                 "Board successfully uploaded"));
+        }
+
+        /// <summary>
+        /// Get all board IDs
+        /// </summary>
+        /// <remarks>
+        /// Returns a list of all existing board IDs in the Redis repository.
+        /// Useful for quickly listing available boards.
+        /// </remarks>
+        /// <returns>List of board IDs wrapped in ApiResponse</returns>
+        /// <response code="200">Successfully retrieved list of board IDs</response>        
+        [HttpGet("boards/ids")]
+        [ProducesResponseType(typeof(ApiResponse<List<string>>), 200)]
+        public ActionResult<ApiResponse<List<string>>> GetAllBoardIds()
+        {
+            var boardIds = _service.GetAllBoardIds();
+
+            if (boardIds == null || boardIds.Count < 1)
+                _logger.LogInformation("No boards exist");
+
+            return Ok(ApiResponse<List<string>>.Ok(boardIds, "Retrieved all board IDs"));
+        }
+
+        /// <summary>
+        /// Get the current state of a board
+        /// </summary>
+        /// <param name="boardId">Board ID</param>
+        [HttpGet("board/{boardId}")]
+        [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<BoardStateResponseDto>), 404)]
+        public async Task<ActionResult<ApiResponse<BoardStateResponseDto>>> GetBoard(string boardId)
+        {
+            var board = await _service.LoadBoard(boardId);
+
+            return Ok(ApiResponse<BoardStateResponseDto>.Ok(new BoardStateResponseDto
+            {
+                BoardId = board.Id,
+                Grid = board.Grid,
+                Generation = board.Generation,
+                Timestamp = DateTime.UtcNow
+            }));
         }
 
         /// <summary>
