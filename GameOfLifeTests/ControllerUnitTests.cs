@@ -154,5 +154,58 @@ namespace GameOfLife.Tests.Controllers
             var response = Xunit.Assert.IsType<ApiResponse<BoardStateResponseDto>>(okResult.Value);
             Xunit.Assert.Equal(board.Id, response.Data.BoardId);
         }
+
+        [Fact]
+        public async Task UploadBoard_InvalidBoard_ReturnsBadRequest()
+        {
+            var request = new UploadBoardRequestDto
+            {
+                Grid = new bool[2][] { new bool[2], new bool[2] }
+            };
+
+            _mockValidator.Setup(v => v.ValidateBoard(It.IsAny<bool[][]>()))
+                          .Returns((false, "Invalid board"));
+
+            var result = await _controller.UploadBoard(request);
+
+            var badRequest = Xunit.Assert.IsType<BadRequestObjectResult>(result.Result);
+            var response = Xunit.Assert.IsType<ApiResponse<BoardIdResponseDto>>(badRequest.Value);
+            Xunit.Assert.Equal("Invalid board", response.Message);
+        }     
+
+        [Fact]
+        public async Task GetBoard_BoardNotFound_ThrowsException()
+        {
+            _mockService.Setup(s => s.LoadBoard("missing")).ThrowsAsync(new KeyNotFoundException());
+
+            await Xunit.Assert.ThrowsAsync<KeyNotFoundException>(() => _controller.GetBoard("missing"));
+        }
+
+        [Fact]
+        public async Task GetNextState_BoardNotFound_ThrowsException()
+        {
+            _mockService.Setup(s => s.LoadBoard("missing")).ThrowsAsync(new KeyNotFoundException());
+
+            await Xunit.Assert.ThrowsAsync<KeyNotFoundException>(() => _controller.GetNextState("missing"));
+        }
+
+        [Fact]
+        public async Task GetNStatesAhead_BoardNotFound_ThrowsException()
+        {
+            _mockValidator.Setup(v => v.ValidateIterations(It.IsAny<int>()))
+                          .Returns((true, string.Empty));
+
+            _mockService.Setup(s => s.LoadBoard("missing")).ThrowsAsync(new KeyNotFoundException());
+
+            await Xunit.Assert.ThrowsAsync<KeyNotFoundException>(() => _controller.GetNStatesAhead("missing", 5));
+        }  
+
+        [Fact]
+        public async Task DeleteBoard_NullOrEmptyBoardId_ThrowsArgumentException()
+        {
+            await Xunit.Assert.ThrowsAsync<ArgumentException>(() => _controller.DeleteBoard(null));
+            await Xunit.Assert.ThrowsAsync<ArgumentException>(() => _controller.DeleteBoard(string.Empty));
+            await Xunit.Assert.ThrowsAsync<ArgumentException>(() => _controller.DeleteBoard(" "));
+        }
     }
 }
